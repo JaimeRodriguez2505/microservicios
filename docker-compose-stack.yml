@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+
+  redis:
+    image: redis
+    networks:
+      - frontend
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  vote:
+    image: mi-vote-app
+    ports:
+      - 5000:80
+    networks:
+      - frontend
+    deploy:
+      replicas: 2
+
+  result:
+    image: mi-result-app
+    ports:
+      - 5001:80
+    networks:
+      - backend
+
+  worker:
+    image: mi-worker-app
+    networks:
+      - frontend
+      - backend
+    deploy:
+      replicas: 2
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db-data:
